@@ -1,0 +1,52 @@
+
+//Этот код создает главное окно приложения с кнопкой ("Отправить") и текстовым полем для ввода данных. При нажатии на кнопку текст из текстового поля выводится в консоль с помощью функции `qDebug()`. Вы можете добавить свою собственную логику для обработки введенных данных в соответствующем слоте.
+
+//Вы можете собрать и запустить проект с помощью инструментов Qt.
+
+
+  
+#include <QApplication>
+#include <QWidget>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QDebug>
+
+class MyWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    MyWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        // Создаем кнопку и текстовое поле
+        QPushButton *button = new QPushButton("Отправить");
+        QLineEdit *lineEdit = new QLineEdit;
+
+        // Создаем вертикальный макет и добавляем кнопку и текстовое поле в него
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addWidget(button);
+        layout->addWidget(lineEdit);
+
+        // Устанавливаем макет для главного виджета
+        setLayout(layout);
+
+        // Подключаем сигнал нажатия кнопки к слоту
+        connect(button, &QPushButton::clicked, this, [lineEdit]() {
+            QString text = lineEdit->text();
+            qDebug() << "Текст:" << text;
+            // Здесь можно добавить логику для обработки введенных данных
+        });
+    }
+};
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+
+    // Создаем экземпляр нашего виджета
+    MyWidget widget;
+    widget.show();
+
+    return app.exec();
+}
+
+#include "main.moc"
+ 
