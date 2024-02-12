@@ -1,0 +1,65 @@
+ 
+#include <SoftwareSerial.h>
+
+SoftwareSerial gsm(2, 3); // Подключение модуля Neoway M590 к пинам 2 и 3 Arduino
+
+void setup() {
+  Serial.begin(9600); // Инициализация последовательного порта для вывода отладочной информации
+  gsm.begin(9600); // Инициализация последовательного порта для связи с модулем Neoway M590
+
+  // Настройка модуля M590
+  delay(1000);
+  gsm.println("AT"); // Проверка соединения с модулем
+  delay(1000);
+  while (gsm.available()) {
+    Serial.write(gsm.read());
+  }
+
+  // Настройка SMS-режима
+  gsm.println("AT+CMGF=1"); // Установка режима текстовых SMS
+  delay(1000);
+  gsm.println("AT+CNMI=2,2,0,0,0"); // Вывод содержимого нового SMS в последовательный порт
+  delay(1000);
+}
+
+void loop() {
+  // Ожидание входящих SMS
+  if (gsm.available()) {
+    String message = gsm.readString();
+    // Обработка входящего SMS
+    // Ваш код для обработки входящего SMS
+
+    // Отправка ответного SMS
+    String response = "Спасибо за ваше сообщение!";
+    sendSMS("+123456789", response); // Замените номер телефона на нужный
+
+    delay(1000);
+  }
+
+  // Чтение команд из последовательного порта
+  if (Serial.available()) {
+    String command = Serial.readString();
+    // Обработка команды пользователя
+    // Ваш код для обработки команды
+
+    // Пример: отправка SMS по команде пользователя
+    if (command.startsWith("send")) {
+      String phoneNumber = "+123456789"; // Замените номер телефона на нужный
+      String message = command.substring(5); // Извлечение текста сообщения из команды (пример: "send Привет, мир!")
+      sendSMS(phoneNumber, message);
+    }
+  }
+
+  // Другая логика работы программы
+  // Ваш код для другой логики работы программы
+}
+
+void sendSMS(String phoneNumber, String message) {
+  gsm.println("AT+CMGS=\"" + phoneNumber + "\""); // Установка номера получателя
+  delay(1000);
+  gsm.println(message); // Отправка текста сообщения
+  delay(1000);
+  gsm.write(26); // Отправка Ctrl+Z для окончания SMS
+  delay(1000);
+}
+ 
