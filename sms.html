@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Отправка SMS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .success-message {
+      color: #008000;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .error-message {
+      color: #FF0000;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Отправка SMS</h1>
+  <form id="smsForm">
+    <label for="phoneNumber">Номер телефона:</label>
+    <input type="text" id="phoneNumber" name="phoneNumber" required><br><br>
+    <label for="message">Сообщение:</label>
+    <textarea id="message" name="message" required></textarea><br><br>
+    <button type="submit">Отправить SMS</button>
+  </form>
+  <div id="responseMessage"></div>
+
+  <script>
+    const form = document.getElementById('smsForm');
+    const responseMessage = document.getElementById('responseMessage');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const message = document.getElementById('message').value;
+
+      // Отправка данных на сервер
+      fetch('/send-sms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phoneNumber, message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          responseMessage.innerHTML = `<div class="error-message">${data.error}</div>`;
+        } else {
+          responseMessage.innerHTML = `<div class="success-message">SMS успешно отправлено</div>`;
+          form.reset();
+        }
+      })
+      .catch(error => {
+        responseMessage.innerHTML = `<div class="error-message">Ошибка при отправке SMS</div>`;
+      });
+    });
+  </script>
+</body>
+</html>
